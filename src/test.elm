@@ -17,6 +17,7 @@ type alias Card =
 type alias Template = 
   { name : String
   , fields : List Field
+  , background : Background
   }
 
 type alias Field =
@@ -25,6 +26,10 @@ type alias Field =
   , y : Float
   }
 
+type Background 
+  = Img String
+  | None
+  
 makeField : List String -> Result String Field
 makeField data = 
   case data of
@@ -54,12 +59,12 @@ makeTemplates fields templates =
       let templateMaybe = (get field.templateName templates) in
         case templateMaybe of
           Just template -> makeTemplates xs (insert field.templateName (addField template field) templates)
-          Nothing -> makeTemplates xs (insert field.templateName (Template field.templateName [field]) templates)
+          Nothing -> makeTemplates xs (insert field.templateName (Template field.templateName [field] None) templates)
     (Err _::xs) -> makeTemplates xs templates
     [] -> templates
 
 addField : Template -> Field -> Template
-addField template field = Template template.name (template.fields ++ [field])
+addField template field = Template template.name (template.fields ++ [field]) None
 
 attributeListDecoder : Decoder (List (List String))
 attributeListDecoder =
